@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskAssignment.Models
 {
@@ -20,6 +21,8 @@ namespace TaskAssignment.Models
         [Key]
         public int TaskId { get; set; }
         [Required]
+        public int UserId { get; set; }
+        [Required]
         [MaxLength(100)]
         public string Title { get; set; }
         [Required]
@@ -31,5 +34,8 @@ namespace TaskAssignment.Models
         public Priority Priority { get; set; }
         [Required]
         public Status Status { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
     }
 }
