@@ -11,7 +11,7 @@ namespace TaskAssignment.Controllers
     {
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult> FlightOwnerRegistration(Register register)
+        public async Task<ActionResult> AdminRegistration(Register register)
         {
             if (!ModelState.IsValid)
             {
@@ -23,7 +23,7 @@ namespace TaskAssignment.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult> FlightOwnerLogin(Login login)
+        public async Task<ActionResult> AdminLogin(Login login)
         {
             if (!ModelState.IsValid) return BadRequest("Model is invalid");
             var AdminSuccessLogin = await adminRepository.SignInAsync(login);

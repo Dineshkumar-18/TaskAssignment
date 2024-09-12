@@ -1,4 +1,4 @@
 ﻿namespace TaskAssignment.Response
 {
-    public class GeneralResponse(bool flag,string message);
+    public record class GeneralResponse(bool flag,string message);
 }

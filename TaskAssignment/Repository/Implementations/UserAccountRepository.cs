@@ -12,9 +12,8 @@ using TaskAssignment.Response;
 
 namespace AeroFlex.Repository.Implementations
 {
-    public class UserAcccountRepository(ApplicationDbContext _context, IOptions<JwtSection> _config, IHttpContextAccessor _httpContextAccessor) : IAdminAccount
+    public class UserAcccountRepository(ApplicationDbContext _context, IOptions<JwtSection> _config, IHttpContextAccessor _httpContextAccessor) : IUserAccount
     {
-
 
         public async Task<GeneralResponse> CreateAsync(Register register)
         {
@@ -27,13 +26,16 @@ namespace AeroFlex.Repository.Implementations
                 return new GeneralResponse(false, "Email already exist");
             }
 
-            var Admin = new User
+            var User = new User
             {
                 Email = register.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(register.Password),
                 Name = register.Name,
                 Role = RoleConstants.User,
             };
+
+            await _context.Users.AddAsync(User); // Add this line to save admin
+            await _context.SaveChangesAsync();
 
             return new GeneralResponse(true, "User Registered Successfully");
         }

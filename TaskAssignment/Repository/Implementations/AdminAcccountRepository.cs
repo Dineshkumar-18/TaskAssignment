@@ -12,9 +12,19 @@ using TaskAssignment.Response;
 
 namespace AeroFlex.Repository.Implementations
 {
-    public class AdminAcccountRepository(ApplicationDbContext _context, IOptions<JwtSection> _config, IHttpContextAccessor _httpContextAccessor) :IAdminAccount
+    public class AdminAcccountRepository :IAdminAccount
     {
-       
+        private readonly ApplicationDbContext _context;
+        private readonly IOptions<JwtSection> _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AdminAcccountRepository(ApplicationDbContext context, IOptions<JwtSection> config, IHttpContextAccessor httpContextAccessor)
+        {
+            _context = context;
+            _config = config;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
 
         public async Task<GeneralResponse> CreateAsync(Register register)
         {
@@ -27,15 +37,18 @@ namespace AeroFlex.Repository.Implementations
                     return new GeneralResponse(false, "Email already exist");
                 }
 
-            var Admin = new Admin { 
+            var admin = new Admin { 
                 Email = register.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(register.Password),
                 AdminName = register.Name,
                 Role=RoleConstants.Admin,
             };
 
+            await _context.Admins.AddAsync(admin);
+            await _context.SaveChangesAsync(); // Ensure this line is awaited properly.
+
             return new GeneralResponse(true, "Admin Registered Successfully");
-          }
+        }
 
         private async Task<Admin> FindByEmail(string email)
         {

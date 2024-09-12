@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TaskAssignment.Models
 {
@@ -35,6 +37,8 @@ namespace TaskAssignment.Models
         [Required]
         public Status Status { get; set; }=Status.Pending;
 
+        [ValidateNever]
+        [JsonIgnore]
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
     }

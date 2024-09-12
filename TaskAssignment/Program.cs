@@ -7,6 +7,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskAssignment.Data;
 using TaskAssignment.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json.Serialization;
 
 namespace TaskAssignment
 {
@@ -18,7 +23,10 @@ namespace TaskAssignment
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.IgnoreReadOnlyProperties = true;
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

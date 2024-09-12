@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TaskAssignment.Models
 {
@@ -19,6 +21,8 @@ namespace TaskAssignment.Models
         [Required]
         public string Role { get; set; }
 
+        [ValidateNever]
+        [JsonIgnore]
         public ICollection<Tasks> Tasks { get; set; }
     }
 }
