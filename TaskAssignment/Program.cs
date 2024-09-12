@@ -1,4 +1,6 @@
 
+using AeroFlex.Repository.Contracts;
+using AeroFlex.Repository.Implementations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +25,10 @@ namespace TaskAssignment
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DBconnection")));
 
             builder.Services.Configure<JwtSection>(builder.Configuration.GetSection("JwtSection"));
+            builder.Services.AddScoped<IAdminAccount, AdminAcccountRepository>();
+            builder.Services.AddScoped<IUserAccount,UserAcccountRepository>();
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication(options =>
             {
@@ -67,6 +73,7 @@ namespace TaskAssignment
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

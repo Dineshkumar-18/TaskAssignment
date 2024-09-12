@@ -33,7 +33,7 @@ namespace TaskAssignment.Models
         [Required]
         public Priority Priority { get; set; }
         [Required]
-        public Status Status { get; set; }
+        public Status Status { get; set; }=Status.Pending;
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }

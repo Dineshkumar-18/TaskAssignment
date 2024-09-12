@@ -47,7 +47,7 @@ namespace AeroFlex.Repository.Implementations
         {
             if (login == null) return new LoginResponse(false, "Model is invalid");
 
-            var user = await _context.Admins
+            var user = await _context.Users
                       .FirstOrDefaultAsync(u => u.Email == login.Email);
             if (user == null)
             {
@@ -58,7 +58,7 @@ namespace AeroFlex.Repository.Implementations
                 return new LoginResponse(false, "Username or Password is invalid");
             }
 
-            string jwtToken = GenerateJwtToken(user, RoleConstants.Admin);
+            string jwtToken = GenerateJwtToken(user, RoleConstants.User);
             AppendCookie(jwtToken);
 
 
@@ -82,13 +82,13 @@ namespace AeroFlex.Repository.Implementations
             }
         }
 
-        private string GenerateJwtToken(Admin user, string role)
+        private string GenerateJwtToken(User user, string role)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Value.Key!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier,user.AdminId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier,user.UserId.ToString()),
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Role,role)
             };
