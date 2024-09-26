@@ -13,7 +13,7 @@ const UserList = () => {
    const getAllUsers=async()=>
    {
     try{
-    const response=await axios.get("https://localhost:7274/api/Tasks/getallusers",
+       const response=await axios.get("https://localhost:7274/api/Tasks/getallusers",
         {
             withCredentials: true
         }
@@ -46,7 +46,7 @@ const UserList = () => {
           {users.map((user) => (
             <tr
               key={user.userId}
-              className="border border-gray-300 md:border-none block md:table-row"
+              className="border border-gray-300 md:border-none block md:table-row text-center"
             >
               <td className="p-2 md:table-cell">{user.userId}</td>
               <td className="p-2 md:table-cell">{user.name}</td>
