@@ -35,7 +35,7 @@ namespace TaskAssignment
             {
                 options.AddPolicy("AllowReactApp", builder =>
                 {
-                    builder.WithOrigins("https://localhost:5173")
+                    builder.WithOrigins("https://localhost:5174")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -57,7 +57,7 @@ namespace TaskAssignment
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.SaveToken = false;
+                options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -93,7 +93,6 @@ namespace TaskAssignment
 
             app.UseCors("AllowReactApp");
             app.UseHttpsRedirection();
-            
             app.UseAuthentication();
             app.UseAuthorization();
 
