@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskAssignment.Data;
 using TaskAssignment.Dtos;
 using TaskAssignment.Models;
+using TaskAssignment.Exceptions;
 
 namespace TaskAssignment.Controllers
 {
@@ -28,29 +29,45 @@ namespace TaskAssignment.Controllers
 
         // GET: api/Tasks
         [HttpGet]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Tasks>>> GetTasks()
         {
-            var tasks=await _context.Tasks
-                   .Include(t => t.User) 
-                   .Select(t => new TaskDto
-                    {
-                        UserId=t.UserId,
-                        Title = t.Title,
-                        Description = t.Description,
-                        DueDate = t.DueDate,
-                        Priority = t.Priority.ToString(),
-                    }).ToListAsync();
+            var tasks = await _context.Tasks
+                .Include(t => t.User)
+                .Select(t => new TaskDto
+                {
+                    UserId = t.UserId,
+                    Title = t.Title,
+                    Description = t.Description,
+                    DueDate = t.DueDate,
+                    Priority = t.Priority.ToString(),
+                }).ToListAsync();
+
+            if (tasks == null || !tasks.Any())
+            {
+                return NotFound();
+            }
 
             return Ok(tasks);
         }
+        [HttpGet]
+        [Authorize(Roles ="Admin")]
+        [Route("getallusers")]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUser()
+        {
+            var user = await _context.Users.ToListAsync();
+            if (user == null) return NotFound("No User Found");
+            return user;
+        }
+
 
         [HttpGet]
         [Route("taskbyuser/{userId}")]
         public async Task<ActionResult<IEnumerable<Tasks>>> GetTasksbyUserId(int userId)
         {
             var uId = int.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
-            if (uId != userId) return Forbid("You are not allowed to view another user's tasks");
+            var role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            if (uId != userId && role!="Admin") return StatusCode(StatusCodes.Status403Forbidden, "You are not allowed to view another user's tasks");
 
             var tasks = await _context.Tasks.Where(x => x.UserId == userId).ToListAsync();
             if (tasks == null || !tasks.Any())
@@ -121,14 +138,25 @@ namespace TaskAssignment.Controllers
         [Authorize(Roles ="Admin")]
         public async Task<ActionResult<Tasks>> GetTasks(int id)
         {
-            var tasks = await _context.Tasks.FindAsync(id);
-
-            if (tasks == null)
+            try
             {
-                return NotFound();
-            }
+                var task = await _context.Tasks.FindAsync(id);
 
-            return tasks;
+                if (task == null)
+                {
+                    throw new TaskNotFoundException($"Task with ID {id} not found.");
+                }
+
+                return Ok(task);
+            }
+            catch (TaskNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+            }
         }
 
         // PUT: api/Tasks/5
@@ -169,28 +197,37 @@ namespace TaskAssignment.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Tasks>> PostTasks(TaskDto taskDto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == taskDto.UserId);
-            if (user == null) return BadRequest("User not found");
-
-            if (!Enum.TryParse<Priority>(taskDto.Priority, true, out var parsedPriority))
+            try
             {
-                return BadRequest("Invalid priority value. Valid values are: Low, Medium, High.");
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == taskDto.UserId);
+                if (user == null)
+                    return BadRequest("User not found");
+
+                if (!Enum.TryParse<Priority>(taskDto.Priority, true, out var parsedPriority))
+                {
+                    throw new InvalidPriorityException("Invalid priority value. Valid values are: Low, Medium, High.");
+                }
+
+                var task = new Tasks
+                {
+                    Title = taskDto.Title,
+                    Description = taskDto.Description,
+                    DueDate = taskDto.DueDate,
+                    Priority = parsedPriority,
+                    UserId = taskDto.UserId
+                };
+
+                _context.Tasks.Add(task);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetTasks", new { id = task.TaskId }, task);
             }
-
-            var task = new Tasks
+            catch (InvalidPriorityException ex)
             {
-                Title = taskDto.Title,
-                Description = taskDto.Description,
-                DueDate = taskDto.DueDate,
-                Priority = parsedPriority,
-                UserId = taskDto.UserId
-            };
-
-            _context.Tasks.Add(task);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTasks", new { id = task.TaskId }, task);
+                return BadRequest(ex.Message);
+            }
         }
+
 
         // DELETE: api/Tasks/5
         [HttpDelete("{id}")]

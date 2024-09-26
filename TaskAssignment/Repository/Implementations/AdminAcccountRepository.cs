@@ -74,7 +74,7 @@ namespace AeroFlex.Repository.Implementations
                     AppendCookie(jwtToken);
 
                  
-                   return new LoginResponse(true, "Login succeffully", jwtToken);
+                   return new LoginResponse(true, "Login successfully", jwtToken);
         }
 
         private void AppendCookie(string jwtToken)
@@ -86,7 +86,7 @@ namespace AeroFlex.Repository.Implementations
                 {
                     HttpOnly = true,
                     Secure = true, 
-                    SameSite = SameSiteMode.Strict,
+                    SameSite = SameSiteMode.None,
                     Expires = DateTime.UtcNow.AddHours(1) //  expiration time
                 };
 

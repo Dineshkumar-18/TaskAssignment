@@ -30,6 +30,18 @@ namespace TaskAssignment
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp", builder =>
+                {
+                    builder.WithOrigins("https://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
+
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DBconnection")));
 
             builder.Services.Configure<JwtSection>(builder.Configuration.GetSection("JwtSection"));
@@ -79,8 +91,9 @@ namespace TaskAssignment
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowReactApp");
             app.UseHttpsRedirection();
-
+            
             app.UseAuthentication();
             app.UseAuthorization();
 
