@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-const Login = () => {
+const UserLogin = () => {
 
 
     console.log("hello")
@@ -24,20 +24,18 @@ const Login = () => {
       e.preventDefault();
       try {
         console.log("handleLogin")
-        const response=await axios.post('https://localhost:7274/api/Admin/login',login)
+        const response=await axios.post('https://localhost:7274/api/UserAccount/login',login)
         console.log(response.data)
         console.log(response.data.flag)
-        if(!response.data.flag) setError(response.data.message)
+        if(!response.data.flag) setError(response.data.message)        
         else
         {
-
-          if(!response.data.flag) setError(response.data.message)
-           const jwtToken = response.data.jwttoken;
-                if (jwtToken) {
-                    localStorage.setItem('jwtToken', jwtToken);
-                }
+            const jwtToken = response.data.jwttoken;
+            if (jwtToken) {
+                localStorage.setItem('jwtToken', jwtToken);
+            }
           setError('')
-          navigate('/admin/')
+          navigate('/user/')
         }
       } catch (error) {
           console.log(error)
@@ -57,7 +55,7 @@ const Login = () => {
 
 
   return (
-  <div className='min-h-screen flex justify-center items-center'>
+<div className='min-h-screen flex justify-center items-center'>
   <div className="bg-opacity-80 bg-black border-2 border-white border-opacity-40 backdrop-blur-lg text-white rounded-lg p-10 w-96">
   <form method='POST'>
     <h1 className="text-3xl text-center mb-6">Login</h1>
@@ -99,7 +97,7 @@ const Login = () => {
     <div className="register-link text-center mt-6 text-sm">
       <p>
          Don't have an account? {' '}
-        <Link to="/admin/register" className="text-blue-500 hover:underline font-semibold">Register</Link>
+        <Link to="/user/register" className="text-blue-500 hover:underline font-semibold">Register</Link>
       </p>
     </div>
     {error!="" && <p className="text-red-500 text-lg mt-2 text-center">{error}</p>}
@@ -110,4 +108,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default UserLogin

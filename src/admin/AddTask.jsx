@@ -1,6 +1,7 @@
-import axios from 'axios';
+
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import axios from '../axiosConfig';
 
 const AddTask = () => {
   const { userid } = useParams();

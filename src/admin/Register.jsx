@@ -61,6 +61,7 @@ const Register = () => {
 
 
   return (
+   <div className='min-h-screen flex justify-center items-center'>
   <div className="bg-opacity-80 bg-black border-2 border-white border-opacity-40 backdrop-blur-lg text-white rounded-lg p-10 w-96">
   <form method='POST'>
     <h1 className="text-3xl text-center mb-6">Register</h1>
@@ -134,6 +135,7 @@ const Register = () => {
     </div>
     {error!="" && <p className="text-red-500 text-lg mt-2 text-center">{error}</p>}
   </form>
+</div>
 </div>
 
   )

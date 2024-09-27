@@ -9,6 +9,7 @@ const NavBar = () => {
             <li><Link to="/admin/user-list">User List</Link></li>
             <li><Link to="/admin/:userid/add-task">Add Task</Link></li>
             <li><Link to="/admin/:userid/edit/:taskid">Edit Task</Link></li>
+            <li><Link to="/admin/view-tasks">View Tasks</Link></li>
         </ul>
     </nav>
   )
